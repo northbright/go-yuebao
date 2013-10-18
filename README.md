@@ -17,7 +17,7 @@ To use the package, you'll need the appropriate import statement:
         "github.com/northbright/go-yuebao"
     )
 
-## yuebao data type 
+#### yuebao data type
 
     type YuebaoData struct {
         Date string  // date in string format(yyyy-mm-dd, ex: 2013-10-16)
@@ -25,8 +25,11 @@ To use the package, you'll need the appropriate import statement:
         YieldRate float32 // 7-day annual yield rate(七天年化收益率)
     }
 
-## yuebao.Get()
+#### yuebao.Get()
 
+    func Get() (data *YuebaoData, err error)
+
+    Example:
     if data, err := yuebao.Get(); err != nil {
         fmt.Println(err)
     } else {
@@ -35,4 +38,6 @@ To use the package, you'll need the appropriate import statement:
         fmt.Println("YieldRate: " + strconv.FormatFloat(float64(data.YieldRate), 'f', -1, 32) + "%")
     }
 
-You may run "go test" and check yuebao_test.go for more information.
+# Test
+
+    run "go test" to test the Get() func.
