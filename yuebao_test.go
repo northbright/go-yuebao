@@ -2,16 +2,30 @@ package yuebao
 
 import (
     "fmt"
-    "strconv"
+    //"strconv"
     "testing"
 )
 
-func Test_Get(t *testing.T) {
-    if data, err := Get(); err != nil {
+var err error
+
+func Test_GrabLatest(t *testing.T) {
+    fmt.Println("\nTesting GrabLatest()...")
+    fmt.Printf("Try to grab latest yuebao data.\n")
+    err := GrabLatest()
+    if err != nil {
+        fmt.Println(err)
         t.Error(err)
-    } else {
-        fmt.Println("Date: " + data.Date)
-        fmt.Println("Yield: " + strconv.FormatFloat(float64(data.Yield), 'f', -1, 32))
-        fmt.Println("YieldRate: " + strconv.FormatFloat(float64(data.YieldRate), 'f', -1, 32) + "%")
     }
+}
+
+func Test_Get(t *testing.T) {
+    fmt.Println("\nTesting Get()...")
+    str := Get("2013-10-30")
+    fmt.Println(str)
+}
+
+func Test_GetRange(t *testing.T) {
+    fmt.Println("\nTesting GetRange()...")
+    str := GetRange("2013-05-30", "2013-10-30")
+    fmt.Println(str)
 }

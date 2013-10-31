@@ -17,27 +17,32 @@ To use the package, you'll need the appropriate import statement:
         "github.com/northbright/go-yuebao"
     )
 
-#### yuebao data type
+#### GrabLatest()
 
-    type YuebaoData struct {
-        Date string  // date in string format(yyyy-mm-dd, ex: 2013-10-16)
-        Yield float32 // yield per 10000 units / day(每万份收益/天)
-        YieldRate float32 // 7-day annual yield rate(七天年化收益率)
-    }
+    //Grab latest yuebao data from tianhong fund website and save into leveldb database(./my.db).
+    func GrabLatest() (err error)
 
-#### yuebao.Get()
+#### GetRange()
 
-    func Get() (data *YuebaoData, err error)
+    // Get data from day start to day end.
+    // param: dateBegin, dayEnd in "yyyy-mm-dd" format.
+    // return: json array. Ex:
+    // [
+    //   {"d":"2013-07-22","y":1.1547,"r":4.4470},
+    //   {"d":"2013-07-21","y":1.1962,"r":4.4710}
+    // ]
+    // d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
+    func GetRange(dateBegin, dateEnd string) (jsonStr string) 
 
-    Example:
-    if data, err := yuebao.Get(); err != nil {
-        fmt.Println(err)
-    } else {
-        fmt.Println("Date: " + data.Date)
-        fmt.Println("Yield: " + strconv.FormatFloat(float64(data.Yield), 'f', -1, 32))
-        fmt.Println("YieldRate: " + strconv.FormatFloat(float64(data.YieldRate), 'f', -1, 32) + "%")
-    }
+#### Get()    
+
+    // Get yuebao data by date.
+    // param: date in "yyyy-mm-dd" format.
+    // return: json string. Ex:
+    // {"d":"2013-07-22","y":1.1547,"r":4.4470}
+    // d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
+    func Get(date string) string
 
 # Test
 
-    run "go test" to test the Get() func.
+    run "go test".
