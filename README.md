@@ -50,5 +50,9 @@ To use the package, you'll need the appropriate import statement:
     // d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
     func GetData(date string) string
 
+# Config File
+
+Make sure the config file "config.json" exists under "./":
+
 # Test
     run "go test".
