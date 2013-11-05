@@ -1,0 +1,8 @@
+{
+    "db_path": "./my.db",
+    "latest_url": "http://www.thfund.com.cn/column.dohsmode=searchtopic&pageno=0&channelid=2&categoryid=2435&childcategoryid=2436.htm",
+    "latest_pattern": "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\n\\s*<td><span>(?P<earn>\\d*\\.\\d{4})</span></td>\\n\\s*<td><span>(?P<percent>\\d*\\.\\d*)",
+    "history_url": "http://www.thfund.com.cn/website/hd/zlb/newzlbrev2.jsp",
+    "history_pattern": "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\r\\n\\s*<td>(?P<earn>\\d*\\.\\d{4})</td>\\r\\n\\s*<td>(?P<percent>\\d*\\.\\d*)"
+}
+
