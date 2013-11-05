@@ -54,5 +54,11 @@ To use the package, you'll need the appropriate import statement:
 
 Make sure the config file "config.json" exists under "./":
 
+    db_path: leveldb database path. Default is "./my.db".
+    latest_url: url to grab latest yuebao data.
+    latest_pattern: regexp pattern string to grab latest yuebao data.
+    history_url: url to grab all history yuebao data.
+    history_pattern: regext pattern string to grab all history yuebao data.
+
 # Test
     run "go test".
