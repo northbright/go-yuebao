@@ -49,7 +49,7 @@ func SaveFromRegexpMatches(matches []string) (err error) {
     yield, _ := strconv.ParseFloat(matches[2], 32)
     yieldRate, _ := strconv.ParseFloat(matches[3], 32)
 
-    jsonStr := fmt.Sprintf("\"y\":%.4f,\"r\":%.4f", yield, yieldRate)
+    jsonStr := fmt.Sprintf("\"y\":%.4f,\"r\":%.3f", yield, yieldRate)
 
     if DEBUG {
         fmt.Printf("key = %s, value = %s\n", date, jsonStr)
