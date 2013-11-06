@@ -11,7 +11,7 @@ The main method of installation is through "go get" (provided in $GOROOT/bin)
 
 # Usage
 
-To use the package, you'll need the appropriate import statement:
+To use the 'yuebao' package, you'll need the appropriate import statement:
 
     import (
         "github.com/northbright/go-yuebao"
