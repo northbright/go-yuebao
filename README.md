@@ -33,7 +33,7 @@ To use the 'yuebao' package, you'll need the appropriate import statement:
 
     // Get data from day start to day end.
     // param: dateBegin, dayEnd in "yyyy-mm-dd" format.
-    // return: json array. Ex:
+    // return: json array if data exist or "" if no data found. Ex:
     // [
     //   {"d":"2013-07-22","y":1.1547,"r":4.447},
     //   {"d":"2013-07-21","y":1.1962,"r":4.471}
@@ -45,7 +45,7 @@ To use the 'yuebao' package, you'll need the appropriate import statement:
 
     // Get yuebao data by date.
     // param: date in "yyyy-mm-dd" format.
-    // return: json string. Ex:
+    // return: json string if data exist or "" if no data found. Ex:
     // {"d":"2013-07-22","y":1.1547,"r":4.447}
     // d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
     func GetData(date string) string

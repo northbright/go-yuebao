@@ -4,6 +4,7 @@ package yuebao
 
 import (
     "fmt"
+    "time"
     "io/ioutil"
     "net/http"
     "regexp"
@@ -36,6 +37,34 @@ var def_latest_url = "http://www.thfund.com.cn/column.dohsmode=searchtopic&pagen
 var def_latest_pattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\n\\s*<td><span>(?P<earn>\\d*\\.\\d{4})</span></td>\\n\\s*<td><span>(?P<percent>\\d*\\.\\d*)"
 var def_history_url = "http://www.thfund.com.cn/website/hd/zlb/newzlbrev2.jsp"
 var def_history_pattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\r\\n\\s*<td>(?P<earn>\\d*\\.\\d{4})</td>\\r\\n\\s*<td>(?P<percent>\\d*\\.\\d*)"
+
+var def_min_date = "2013-05-30"  // yuebao(zenglibao) started from 2013-05-30
+
+// Validate input date string.
+// Date string must:
+// 1. in yyyy-mm-dd format
+// 2. > def_min_date(2013-05-30)
+// 3. <= today
+func IsDateValid(date string) bool {
+    if len(date) == 0 {
+        return false
+    }
+
+    p := `^\d{4}-\d{2}-\d{2}$`
+    re := regexp.MustCompile(p)
+    matches := re.FindStringSubmatch(date)
+    if len(matches) != 1 {
+        return false
+    }
+
+    t := time.Now()
+    today := fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
+
+    if date > today || date < def_min_date {
+        return false
+    }
+    return true
+}
 
 // Save into leveldb database from matched string slice by grabbing data from website.
 func SaveFromRegexpMatches(matches []string) (err error) {
@@ -145,15 +174,19 @@ func GrabHistoryData() (err error) {
 
 // Get data from day start to day end.
 // param: dateBegin, dayEnd in "yyyy-mm-dd" format.
-// return: json array. Ex:
+// return: json array if data exist or "" if no data found. Ex:
 // [
 //   {"d":"2013-07-22","y":1.1547,"r":4.447},
 //   {"d":"2013-07-21","y":1.1962,"r":4.471}
 // ]
-// d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
+// d: -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
 func GetDataByRange(dateBegin, dateEnd string) (jsonStr string) {
     it := db.NewIterator(ro)
     defer it.Close()
+
+    if (!IsDateValid(dateBegin)) || (!IsDateValid(dateEnd)) {
+        return ""
+    }
 
     it.Seek([]byte(dateBegin))
     i := 0
@@ -177,15 +210,19 @@ func GetDataByRange(dateBegin, dateEnd string) (jsonStr string) {
 
 // Get yuebao data by date.
 // param: date in "yyyy-mm-dd" format.
-// return: json string. Ex:
+// return: json string if data exist or "" if no data found.  Ex:
 // {"d":"2013-07-22","y":1.1547,"r":4.447}
 // d -> date, y -> yield(每万份收益), r -> yield rate(7天年化收益率)
 func GetData(date string) string {
-    v, _ := db.Get(ro, []byte(date))
-    if len(v) == 0 {
-        fmt.Println("No value found for date = " + date)
+    if !IsDateValid(date) {
         return ""
     }
+
+    v, _ := db.Get(ro, []byte(date))
+    if len(v) == 0 {
+        return ""
+    }
+
     s := fmt.Sprintf("{\"d\":\"%s\",%s}", date, string(v))
     return s
 }
