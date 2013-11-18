@@ -5,9 +5,12 @@ import (
     //"strconv"
     "testing"
     "time"
+    "sync"
 )
 
 var err error
+
+var w sync.WaitGroup
 
 func Test_GrabLatestData(t *testing.T) {
     fmt.Println("\nTesting GrabLatestData()...")
@@ -17,6 +20,11 @@ func Test_GrabLatestData(t *testing.T) {
         fmt.Println(err)
         t.Error(err)
     }
+}
+
+func Concurrent_GrabLatestData(t *testing.T){
+    Test_GrabLatestData(t)
+    w.Done()
 }
 
 func Test_GrabHistoryData(t *testing.T) {
@@ -29,12 +37,22 @@ func Test_GrabHistoryData(t *testing.T) {
     }
 }
 
+func Concurrent_GrabHistoryData(t *testing.T) {
+    Test_GrabHistoryData(t)
+    w.Done()
+}
+
 func Test_GetData(t *testing.T) {
     fmt.Println("\nTesting GetData()...")
     s := []string{"2013-04-01", "2013-10-30", "2014-10-02"}
     for _, v := range s {
         fmt.Printf("%s, data = %s\n", v, GetData(v))
     }
+}
+
+func Concurrent_GetData(t *testing.T) {
+    Test_GetData(t)
+    w.Done()
 }
 
 func Test_GetDataByRange(t *testing.T) {
@@ -49,6 +67,11 @@ func Test_GetDataByRange(t *testing.T) {
     fmt.Println(str)
 }
 
+func Concurrent_GetDataByRange(t *testing.T) {
+    Test_GetDataByRange(t)
+    w.Done()
+}
+
 func Test_IsDateValid(t *testing.T) {
     fmt.Println("\nTesting IsDateValid()...")
     s := []string{"2013-4-20", "July, 4, 1999", "2013-05-29", "2013-05-30", "2015-01-01"}
@@ -60,3 +83,13 @@ func Test_IsDateValid(t *testing.T) {
     }
 }
 
+func Test_Concurrent(t *testing.T) {
+    fmt.Println("\nTesting Concurrent()...")
+    w.Add(5)
+    go Concurrent_GrabLatestData(t)
+    go Concurrent_GrabHistoryData(t)
+    go Concurrent_GrabHistoryData(t)  // call 2 times to test write lock
+    go Concurrent_GetData(t)
+    go Concurrent_GetDataByRange(t)
+    w.Wait()
+}

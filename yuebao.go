@@ -22,6 +22,9 @@ var db *levigo.DB = nil
 var ro *levigo.ReadOptions = nil
 var wo *levigo.WriteOptions = nil
 
+// Global channel to make leveldb thread safe when GrabXX functions are called in goroutines.
+var ch_writer = make(chan int, 1)
+
 // Config File
 var config_file = "./config.json"
 
@@ -39,6 +42,16 @@ var def_history_url = "http://www.thfund.com.cn/website/hd/zlb/newzlbrev2.jsp"
 var def_history_pattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\r\\n\\s*<td>(?P<earn>\\d*\\.\\d{4})</td>\\r\\n\\s*<td>(?P<percent>\\d*\\.\\d*)"
 
 var def_min_date = "2013-05-30"  // yuebao(zenglibao) started from 2013-05-30
+
+// Used to lock goroutine to write into leveldb to make thread safe.
+func Lock(ch chan int) {
+    ch <- 1
+}
+
+// Used to unlock goroutine to write into leveldb to make thread safe.
+func UnLock(ch chan int) {
+    <-ch
+}
 
 // Validate input date string.
 // Date string must:
@@ -90,7 +103,9 @@ func SaveFromRegexpMatches(matches []string) (err error) {
         return nil
     }
 
+    Lock(ch_writer)  // write lock for leveldb if function is called in different goroutines.
     err = db.Put(wo, []byte(date), []byte(jsonStr))
+    UnLock(ch_writer)  // unlock
     if err != nil {
         fmt.Println(err)
         return err
