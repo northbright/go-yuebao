@@ -268,11 +268,23 @@ func CloseDB() {
     }
 }
 
+// Load default settings
+func LoadDefConfig() {
+    db_path = def_db_path
+    latest_url = def_latest_url
+    latest_pattern = def_latest_pattern
+    history_url = def_history_url
+    history_pattern = def_history_pattern
+}
+
 // Load settings from config file.
+
 func LoadConfig() {
     buffer, err := ioutil.ReadFile(config_file)
     if err != nil {
         fmt.Println(err)
+        fmt.Println("Load default settings.")
+        LoadDefConfig()
         return
     }
 
@@ -284,6 +296,8 @@ func LoadConfig() {
     obj, err := simplejson.NewJson([]byte(buffer))
     if err != nil {
         fmt.Println(err)
+        fmt.Println("Load default settings.")
+        LoadDefConfig()
         return
     }
 
