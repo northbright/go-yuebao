@@ -5,6 +5,7 @@ package yuebao
 import (
     "fmt"
     "time"
+    "errors"
     "io/ioutil"
     "net/http"
     "regexp"
@@ -21,6 +22,9 @@ var DEBUG = false
 var db *levigo.DB = nil
 var ro *levigo.ReadOptions = nil
 var wo *levigo.WriteOptions = nil
+var cache *levigo.Cache = nil  // leveldb cache
+
+var def_cache_size int = 2 * 1024 * 1024 // default leveldb cache size
 
 // Global channel to make leveldb thread safe when GrabXX functions are called in goroutines.
 var ch_writer = make(chan int, 1)
@@ -245,8 +249,12 @@ func GetData(date string) string {
 // Open leveldb database.
 // It reads "db_path" in config file(./config.json). The default value is "./my.db".
 func OpenDB() (err error){
+    cache = levigo.NewLRUCache(def_cache_size)
+    if cache == nil {
+        return errors.New("levigo.NewLRUCache() == nil")
+    }
     opts := levigo.NewOptions()
-    opts.SetCache(levigo.NewLRUCache(3<<30))
+    opts.SetCache(cache)
     opts.SetCreateIfMissing(true)
 
     db, err = levigo.Open(db_path, opts)
@@ -263,6 +271,10 @@ func OpenDB() (err error){
 
 // Close leveldb instance.
 func CloseDB() {
+    if cache != nil {
+        cache.Close()
+    }
+
     if db != nil {
         db.Close()
     }
