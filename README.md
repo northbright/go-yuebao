@@ -5,9 +5,19 @@ Get the latest yuebao(Tianhong Fund's "Zenglibao") data from Tianhong Fund's web
 
 # Install
 
-The main method of installation is through "go get" (provided in $GOROOT/bin)
+* Requirements
 
-    go get github.com/northbright/go-yuebao
+    go-yuebao requires [levigo](https://github.com/jmhodges/levigo).
+
+    To install levigo, run:
+
+        CGO_CFLAGS="-I/path/to/leveldb/include" CGO_LDFLAGS="-L/path/to/leveldb/lib" go get github.com/jmhodges/levigo
+
+* Install go-yuebao
+
+    The main method of installation is through "go get" (provided in $GOROOT/bin)
+
+        go get github.com/northbright/go-yuebao
 
 # Usage
 
