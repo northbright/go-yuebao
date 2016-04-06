@@ -1,5 +1,7 @@
 # go-yuebao
 
+[![Build Status](https://travis-ci.org/northbright/go-yuebao.svg?branch=master)](https://travis-ci.org/northbright/go-yuebao)
+
 Get the latest yuebao(Tianhong Fund's "Zenglibao") data from Tianhong Fund's website.
 
 
