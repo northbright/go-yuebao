@@ -9,7 +9,5 @@ go:
 
 before_install:
   - sudo apt-get install -y libsnappy-dev
-  - ./install-leveldb.sh
+  - ./install-levigo.sh
 
-before_script:
-  - CGO_CFLAGS="-I./leveldb-master/include" CGO_LDFLAGS="-L./leveldb-master/out-shared -lsnappy" go get github.com/jmhodges/levigo
