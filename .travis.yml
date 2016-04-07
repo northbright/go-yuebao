@@ -17,5 +17,5 @@ before_install:
 
 install:
   - go get github.com/bitly/go-simplejson
-  - CGO_CFLAGS="-I./leveldb-master/include" CGO_LDFLAGS="-L./leveldb-master./out-shared -lsnappy" go get github.com/jmhodges/levigo
+  - CGO_CFLAGS="-I$TRAVIS_BUILD_DIR/leveldb-master/include" CGO_LDFLAGS="-L$TRAVIS_BUILD_DIR/leveldb-master/out-shared -lsnappy" go get github.com/jmhodges/levigo
 
