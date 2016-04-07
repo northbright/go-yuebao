@@ -15,3 +15,7 @@ before_install:
   - sudo apt-get install -y libsnappy-dev
   - ./install-levigo.sh
 
+install:
+  - go get github.com/bitly/go-simplejson
+  - CGO_CFLAGS="-I./leveldb-master/include" CGO_LDFLAGS="-L./leveldb-master./out-shared -lsnappy" go get github.com/bitly/go-simplejson
+
