@@ -4,7 +4,8 @@ wget https://github.com/google/leveldb/archive/master.zip
 unzip master.zip
 cd leveldb-master
 make
-CGO_CFLAGS="-I./include" CGO_LDFLAGS="-L./out-shared -lsnappy" go get github.com/jmhodges/levigo
+echo $CGO_CFLAGS
+echo $CGO_LDFLAGS
 
 
 
