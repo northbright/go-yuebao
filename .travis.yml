@@ -19,3 +19,5 @@ install:
   - go get github.com/bitly/go-simplejson
   - CGO_CFLAGS="-I$TRAVIS_BUILD_DIR/leveldb-master/include" CGO_LDFLAGS="-L$TRAVIS_BUILD_DIR/leveldb-master/out-shared -lsnappy" go get github.com/jmhodges/levigo
 
+script:
+  - LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/leveldb-master/out-shared go test -v
