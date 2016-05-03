@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/northbright/go-yuebao.svg?branch=master)](https://travis-ci.org/northbright/go-yuebao)
 
-Get the latest yuebao(Tianhong Fund's "Zenglibao") data from Tianhong Fund's website.
+go-yuebao is a [Golang](http://golang.org) package which provides functions to get the latest yuebao(Tianhong Fund's "Zenglibao") data from Tianhong Fund's website.
 
 #### Requirements
 
