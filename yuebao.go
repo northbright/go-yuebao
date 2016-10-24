@@ -210,7 +210,7 @@ func GetDataByRange(dateBegin, dateEnd string) (jsonStr string) {
 	it.Seek([]byte(dateBegin))
 	i := 0
 	jsonStr = "[\n"
-	for it = it; it.Valid(); it.Next() {
+	for ; it.Valid(); it.Next() {
 		s := fmt.Sprintf("  {\"d\":\"%s\",%s}", string(it.Key()), string(it.Value()))
 		jsonStr += s
 		if string(it.Key()) == dateEnd {
