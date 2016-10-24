@@ -21,7 +21,7 @@ func Test_GrabLatestData(t *testing.T) {
 	}
 }
 
-func Concurrent_GrabLatestData(t *testing.T) {
+func ConcurrentGrabLatestData(t *testing.T) {
 	Test_GrabLatestData(t)
 	w.Done()
 }
@@ -36,7 +36,7 @@ func Test_GrabHistoryData(t *testing.T) {
 	}
 }
 
-func Concurrent_GrabHistoryData(t *testing.T) {
+func ConcurrentGrabHistoryData(t *testing.T) {
 	Test_GrabHistoryData(t)
 	w.Done()
 }
@@ -49,7 +49,7 @@ func Test_GetData(t *testing.T) {
 	}
 }
 
-func Concurrent_GetData(t *testing.T) {
+func ConcurrentGetData(t *testing.T) {
 	Test_GetData(t)
 	w.Done()
 }
@@ -66,7 +66,7 @@ func Test_GetDataByRange(t *testing.T) {
 	fmt.Println(str)
 }
 
-func Concurrent_GetDataByRange(t *testing.T) {
+func ConcurrentGetDataByRange(t *testing.T) {
 	Test_GetDataByRange(t)
 	w.Done()
 }
@@ -85,10 +85,10 @@ func Test_IsDateValid(t *testing.T) {
 func Test_Concurrent(t *testing.T) {
 	fmt.Println("\nTesting Concurrent()...")
 	w.Add(5)
-	go Concurrent_GrabLatestData(t)
-	go Concurrent_GrabHistoryData(t)
-	go Concurrent_GrabHistoryData(t) // call 2 times to test write lock
-	go Concurrent_GetData(t)
-	go Concurrent_GetDataByRange(t)
+	go ConcurrentGrabLatestData(t)
+	go ConcurrentGrabHistoryData(t)
+	go ConcurrentGrabHistoryData(t) // call 2 times to test write lock
+	go ConcurrentGetData(t)
+	go ConcurrentGetDataByRange(t)
 	w.Wait()
 }

@@ -25,28 +25,28 @@ var ro *levigo.ReadOptions
 var wo *levigo.WriteOptions
 var cache *levigo.Cache // leveldb cache
 
-var def_cache_size int = 2 * 1024 * 1024 // default leveldb cache size
+var defCacheSize int = 2 * 1024 * 1024 // default leveldb cache size
 
 // Global channel to make leveldb thread safe when GrabXX functions are called in goroutines.
-var ch_writer = make(chan int, 1)
+var chWriter = make(chan int, 1)
 
 // Config File
-var config_file = "./config.json"
+var configFile = "./config.json"
 
-var db_path = ""
-var latest_url = ""
-var latest_pattern = ""
-var history_url = ""
-var history_pattern = ""
+var dbPath = ""
+var latestURL = ""
+var latestPattern = ""
+var historyURL = ""
+var historyPattern = ""
 
 // Default Settings
-var def_db_path = "./my.db"
-var def_latest_url = "http://www.thfund.com.cn/column.dohsmode=searchtopic&pageno=0&channelid=2&categoryid=2435&childcategoryid=2436.htm"
-var def_latest_pattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\n\\s*<td><span>(?P<earn>\\d*\\.\\d{4})</span></td>\\n\\s*<td><span>(?P<percent>\\d*\\.\\d*)"
-var def_history_url = "http://www.thfund.com.cn/website/hd/zlb/newzlbrev2.jsp"
-var def_history_pattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\r\\n\\s*<td>(?P<earn>\\d*\\.\\d{4})</td>\\r\\n\\s*<td>(?P<percent>\\d*\\.\\d*)"
+var defDBPath = "./my.db"
+var defLatestURL = "http://www.thfund.com.cn/column.dohsmode=searchtopic&pageno=0&channelid=2&categoryid=2435&childcategoryid=2436.htm"
+var defLatestPattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\n\\s*<td><span>(?P<earn>\\d*\\.\\d{4})</span></td>\\n\\s*<td><span>(?P<percent>\\d*\\.\\d*)"
+var defHistoryURL = "http://www.thfund.com.cn/website/hd/zlb/newzlbrev2.jsp"
+var defHistoryPattern = "<td>(?P<date>\\d{4}-\\d{2}-\\d{2})</td>\\r\\n\\s*<td>(?P<earn>\\d*\\.\\d{4})</td>\\r\\n\\s*<td>(?P<percent>\\d*\\.\\d*)"
 
-var def_min_date = "2013-05-30" // yuebao(zenglibao) started from 2013-05-30
+var defMinDate = "2013-05-30" // yuebao(zenglibao) started from 2013-05-30
 
 // Lock locks goroutine to write into leveldb to make thread safe.
 func Lock(ch chan int) {
@@ -61,7 +61,7 @@ func UnLock(ch chan int) {
 // IsDateValid validates input date string.
 // Date string must:
 // 1. in yyyy-mm-dd format
-// 2. > def_min_date(2013-05-30)
+// 2. > defMinDate(2013-05-30)
 // 3. <= today
 func IsDateValid(date string) bool {
 	if len(date) == 0 {
@@ -78,7 +78,7 @@ func IsDateValid(date string) bool {
 	t := time.Now()
 	today := fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
 
-	if date > today || date < def_min_date {
+	if date > today || date < defMinDate {
 		return false
 	}
 	return true
@@ -108,9 +108,9 @@ func SaveFromRegexpMatches(matches []string) (err error) {
 		return nil
 	}
 
-	Lock(ch_writer) // write lock for leveldb if function is called in different goroutines.
+	Lock(chWriter) // write lock for leveldb if function is called in different goroutines.
 	err = db.Put(wo, []byte(date), []byte(jsonStr))
-	UnLock(ch_writer) // unlock
+	UnLock(chWriter) // unlock
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -120,9 +120,9 @@ func SaveFromRegexpMatches(matches []string) (err error) {
 }
 
 // GrabLatestData grabs latest yuebao data from tianhong fund website and save into leveldb database.
-// It reads the "latest_url" and "latest_pattern" settings from config file(./config.json).
+// It reads the "latestURL" and "latestPattern" settings from config file(./config.json).
 func GrabLatestData() (err error) {
-	res, err := http.Get(latest_url)
+	res, err := http.Get(latestURL)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -149,16 +149,16 @@ func GrabLatestData() (err error) {
 		fmt.Print(s)
 	}
 
-	re := regexp.MustCompile(latest_pattern)
+	re := regexp.MustCompile(latestPattern)
 	matches := re.FindStringSubmatch(s)
 
 	return SaveFromRegexpMatches(matches)
 }
 
 // GrabHistoryData grabs all history yuebao data from tianhong fund website and save into leveldb database.
-// It reads the "history_url" and "history_pattern" settings from config file(./config.json).
+// It reads the "historyURL" and "historyPattern" settings from config file(./config.json).
 func GrabHistoryData() (err error) {
-	res, err := http.Get(history_url)
+	res, err := http.Get(historyURL)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -179,7 +179,7 @@ func GrabHistoryData() (err error) {
 	if DEBUG {
 		fmt.Print(s)
 	}
-	re := regexp.MustCompile(history_pattern)
+	re := regexp.MustCompile(historyPattern)
 	matches := re.FindAllStringSubmatch(s, -1)
 
 	for i := 0; i < len(matches); i++ {
@@ -248,9 +248,9 @@ func GetData(date string) string {
 }
 
 // OpenDB opens leveldb database.
-// It reads "db_path" in config file(./config.json). The default value is "./my.db".
+// It reads "dbPath" in config file(./config.json). The default value is "./my.db".
 func OpenDB() (err error) {
-	cache = levigo.NewLRUCache(def_cache_size)
+	cache = levigo.NewLRUCache(defCacheSize)
 	if cache == nil {
 		return errors.New("levigo.NewLRUCache() == nil")
 	}
@@ -258,7 +258,7 @@ func OpenDB() (err error) {
 	opts.SetCache(cache)
 	opts.SetCreateIfMissing(true)
 
-	db, err = levigo.Open(db_path, opts)
+	db, err = levigo.Open(dbPath, opts)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -283,16 +283,16 @@ func CloseDB() {
 
 // LoadDefConfig loads default settings
 func LoadDefConfig() {
-	db_path = def_db_path
-	latest_url = def_latest_url
-	latest_pattern = def_latest_pattern
-	history_url = def_history_url
-	history_pattern = def_history_pattern
+	dbPath = defDBPath
+	latestURL = defLatestURL
+	latestPattern = defLatestPattern
+	historyURL = defHistoryURL
+	historyPattern = defHistoryPattern
 }
 
 // LoadConfig loads settings from config file.
 func LoadConfig() {
-	buffer, err := ioutil.ReadFile(config_file)
+	buffer, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Load default settings.")
@@ -313,18 +313,18 @@ func LoadConfig() {
 		return
 	}
 
-	db_path = obj.Get("db_path").MustString(def_db_path)
-	latest_url = obj.Get("latest_url").MustString(def_latest_url)
-	latest_pattern = obj.Get("latest_pattern").MustString(def_latest_pattern)
-	history_url = obj.Get("history_url").MustString(def_history_url)
-	history_pattern = obj.Get("history_pattern").MustString(def_history_pattern)
+	dbPath = obj.Get("dbPath").MustString(defDBPath)
+	latestURL = obj.Get("latestURL").MustString(defLatestURL)
+	latestPattern = obj.Get("latestPattern").MustString(defLatestPattern)
+	historyURL = obj.Get("historyURL").MustString(defHistoryURL)
+	historyPattern = obj.Get("historyPattern").MustString(defHistoryPattern)
 
 	fmt.Println("Settings: \n================================")
-	fmt.Println("db_path: " + db_path)
-	fmt.Println("latest_url: " + latest_url)
-	fmt.Println("latest_pattern: " + latest_pattern)
-	fmt.Println("history_url: " + history_url)
-	fmt.Println("history_pattern: " + history_pattern)
+	fmt.Println("dbPath: " + dbPath)
+	fmt.Println("latestURL: " + latestURL)
+	fmt.Println("latestPattern: " + latestPattern)
+	fmt.Println("historyURL: " + historyURL)
+	fmt.Println("historyPattern: " + historyPattern)
 }
 
 func init() {
