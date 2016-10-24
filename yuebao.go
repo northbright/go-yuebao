@@ -25,7 +25,7 @@ var ro *levigo.ReadOptions
 var wo *levigo.WriteOptions
 var cache *levigo.Cache // leveldb cache
 
-var defCacheSize int = 2 * 1024 * 1024 // default leveldb cache size
+var defCacheSize = 2 * 1024 * 1024 // default leveldb cache size
 
 // Global channel to make leveldb thread safe when GrabXX functions are called in goroutines.
 var chWriter = make(chan int, 1)
