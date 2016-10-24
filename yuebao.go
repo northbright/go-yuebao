@@ -20,10 +20,10 @@ import (
 // DEBUG is debug mode to output debug messages.
 var DEBUG = false
 
-var db *levigo.DB = nil
-var ro *levigo.ReadOptions = nil
-var wo *levigo.WriteOptions = nil
-var cache *levigo.Cache = nil // leveldb cache
+var db *levigo.DB
+var ro *levigo.ReadOptions
+var wo *levigo.WriteOptions
+var cache *levigo.Cache // leveldb cache
 
 var def_cache_size int = 2 * 1024 * 1024 // default leveldb cache size
 
